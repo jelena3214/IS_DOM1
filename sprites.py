@@ -257,7 +257,8 @@ def kruskal_mst(without, size, paths, history_dict):
 
             vertices_num += 1
 
-    key = tuple(without)
+    # sortitamo tuple da ne bi bilo slucaja kada pamtimo 1,2,3 i 3,2,1 u dict-u
+    key = tuple(sorted(without))
     history_dict[key] = mst_sum
 
     return mst_sum
@@ -309,7 +310,7 @@ class AgentMicko(Agent):
 
             ##jer nema smisla da trazimo mst sa samo jednim cvorom ili kada imamo samo pocetak i kraj
             if 2 <= size < num_of_nodes:
-                without = tuple(curr_position[3][1:size])
+                without = tuple(sorted(curr_position[3][1:size]))
                 if without not in mst_cost_dict:
                     mst_cost = kruskal_mst(without, num_of_nodes, list(paths), mst_cost_dict)
                 else:
