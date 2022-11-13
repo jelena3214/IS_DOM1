@@ -119,12 +119,10 @@ class ExampleAgent(Agent):
         return [0] + path + [0]
 
 
-# TODO: svuda koristi numpy niz
 class AgentAki(Agent):
     def __init__(self, x, y, file_name):
         super().__init__(x, y, file_name)
 
-    ## TODO: da li je garantovano da se od svakog coina moze stici do sledeceg?
     def get_agent_path(self, coin_distance):
         num_of_coins = len(coin_distance)
         path = [0]
@@ -132,15 +130,12 @@ class AgentAki(Agent):
 
         for i in range(num_of_coins):
             curr_values = coin_distance[curr_pos]
-            print(curr_values)
             curr_tuple = []
 
             for index, value in enumerate(curr_values):
                 curr_tuple.append((index, value))
 
             curr_tuple.sort(key=lambda tup: (tup[1], tup[0]))
-
-            print(curr_tuple)
 
             j = 0
             while True:
@@ -157,34 +152,38 @@ class AgentAki(Agent):
         return path + [0]
 
 
+def all_path_permutations(path):
+    reversed_elements = set()
+    for i in permutations(path):
+        if i not in reversed_elements:
+            reversed_i = tuple(reversed(i))
+            reversed_elements.add(reversed_i)
+            yield (i)
+
+
 class AgentJocke(Agent):
     def __init__(self, x, y, file_name):
         super().__init__(x, y, file_name)
 
-    # TODO: efikasnije?
     def get_agent_path(self, coin_distance):
         num_of_coins = len(coin_distance)
-        all_paths = list(permutations(range(1, num_of_coins)))
-        print(len(all_paths))
+        all_paths = list(all_path_permutations(list(range(1, num_of_coins))))
         min_value = math.inf
         min_path = []
 
         for elem in all_paths:
-            print(elem)
             start_pos = 0
             curr_value = 0
             for i in elem:
                 curr_value += coin_distance[start_pos][i]
                 start_pos = i
             curr_value += coin_distance[start_pos][0]
-            print(curr_value)
             if curr_value < min_value:
                 min_value = curr_value
                 min_path = elem
 
         path = np.asarray(min_path)
         path = np.concatenate(([0], path[:], [0]))
-        print(path)
         return path
 
 
@@ -195,6 +194,7 @@ class AgentUki(Agent):
     # branch and bound
     # imamo sortiranu listu po : crit1(cena), crit2(brZlatnika), crit3(manjaVrOznaka)
 
+    # TODO: ne ubacivati simetricne puteve
     def get_agent_path(self, coin_distance):
         num_of_nodes = len(coin_distance)
         sorted_list = []
@@ -221,12 +221,12 @@ class AgentUki(Agent):
 
             for i in range(1, num_of_nodes):
                 if i not in curr_position[3]:
-                    heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][i]
-                                                 , (len(curr_position[3]) - 1) * -1, i, curr_position[3] + [i]))
+                    heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][i],
+                                                 (len(curr_position[3]) - 1) * -1, i, curr_position[3] + [i]))
 
             if len(curr_position[3]) == num_of_nodes:  # fali samo 0
-                heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][0]
-                                             , (len(curr_position[3]) - 1) * -1, 0, curr_position[3] + [0]))
+                heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][0],
+                                             (len(curr_position[3]) - 1) * -1, 0, curr_position[3] + [0]))
 
             curr_position = heapq.heappop(sorted_list)
 
@@ -276,6 +276,7 @@ class AgentMicko(Agent):
         mst_cost_dict = {}
         heapq.heapify(paths)
 
+        # generisemo sve grane na pocetku
         while j < num_of_nodes:
             k = i
             while k < num_of_nodes:
@@ -290,14 +291,13 @@ class AgentMicko(Agent):
 
         i = 1
 
+        # list(paths) salje kopiju
         mst_cost = kruskal_mst([], num_of_nodes, list(paths), mst_cost_dict)
         while True:
             heapq.heappush(sorted_list, (coin_distance[0][i] + mst_cost, 0, i, [0, i]))
             i += 1
             if i == num_of_nodes:
                 break
-
-        # po broju sakupljenih izmedju pocetka i kraja(bez pocetne 0), po krajnjoj destinaciji puta
 
         curr_position = heapq.heappop(sorted_list)
 
@@ -308,7 +308,8 @@ class AgentMicko(Agent):
 
             size = len(curr_position[3])
 
-            ##jer nema smisla da trazimo mst sa samo jednim cvorom ili kada imamo samo pocetak i kraj
+            # jer nema smisla da trazimo mst sa samo jednim cvorom ili kada imamo samo pocetak i kraj
+
             if 2 <= size < num_of_nodes:
                 without = tuple(sorted(curr_position[3][1:size]))
                 if without not in mst_cost_dict:
@@ -318,14 +319,13 @@ class AgentMicko(Agent):
 
             for i in range(1, num_of_nodes):
                 if i not in curr_position[3]:
-                    heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][i] + mst_cost
-                                                 , (size - 1) * -1, i, curr_position[3] + [i]))
+                    heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][i] + mst_cost,
+                                                 (size - 1) * -1, i, curr_position[3] + [i]))
 
             if size == num_of_nodes:  # fali samo 0, ovde je mst_cost = 0, jer su na parcijalnoj putanji svi osim 0
-                heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][0]
-                                             , (size - 1) * -1, 0, curr_position[3] + [0]))
+                heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][0],
+                                             (size - 1) * -1, 0, curr_position[3] + [0]))
 
             curr_position = heapq.heappop(sorted_list)
 
-        print(mst_cost_dict)
         return path
