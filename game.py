@@ -55,11 +55,11 @@ class Game:
         self.surface_sprite = pygame.sprite.Group()
         self.surface_sprite.add(Surface())
         agent_pos, self.coin_distance, self.coins, self.coins_sprites = Game.load_map(
-            sys.argv[1] if len(sys.argv) > 1 else os.path.join(config.MAP_FOLDER, 'map1.txt'))
+            sys.argv[1] if len(sys.argv) > 1 else os.path.join(config.MAP_FOLDER, 'map0.txt'))
         self.collected_coins = [CollectedCoin(coin) for coin in self.coins]
         self.collected_coins_sprites = pygame.sprite.Group()
         module = __import__('sprites')
-        class_ = getattr(module, sys.argv[2] if len(sys.argv) > 2 else 'AgentMicko')
+        class_ = getattr(module, sys.argv[2] if len(sys.argv) > 2 else 'Uki')
         self.agent = class_(agent_pos[0], agent_pos[1],
                             f'{sys.argv[2]}.png' if len(sys.argv) > 2 else 'Uki.png')
         self.max_elapsed_time = float(sys.argv[3]) if len(sys.argv) > 3 else 5.

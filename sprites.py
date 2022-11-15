@@ -7,6 +7,7 @@ import os
 import config
 
 from itertools import permutations
+# radi brze od priorityQ jer nije thread safe i nema trosenja vremena na taj deo, a ovde nije ni potreban
 import heapq
 
 
@@ -119,7 +120,7 @@ class ExampleAgent(Agent):
         return [0] + path + [0]
 
 
-class AgentAki(Agent):
+class Aki(Agent):
     def __init__(self, x, y, file_name):
         super().__init__(x, y, file_name)
 
@@ -161,7 +162,7 @@ def all_path_permutations(path):
             yield (i)
 
 
-class AgentJocke(Agent):
+class Jocke(Agent):
     def __init__(self, x, y, file_name):
         super().__init__(x, y, file_name)
 
@@ -187,7 +188,7 @@ class AgentJocke(Agent):
         return path
 
 
-class AgentUki(Agent):
+class Uki(Agent):
     def __init__(self, x, y, file_name):
         super().__init__(x, y, file_name)
 
@@ -264,7 +265,7 @@ def kruskal_mst(without, size, paths, history_dict):
     return mst_sum
 
 
-class AgentMicko(Agent):
+class Micko(Agent):
     def __init__(self, x, y, file_name):
         super().__init__(x, y, file_name)
 
