@@ -339,7 +339,7 @@ class Micko(Agent):
                     heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][i] + mst_cost,
                                                  (size - 1) * -1, i, curr_position[3] + [i]))
 
-            if size == num_of_nodes:  # fali samo 0, ovde je mst_cost = 0, jer su na parcijalnoj putanji svi osim 0
+            if size == num_of_nodes:  # fali samo 0, ovde je mst_cost = 0(to vraca i mst funkcija), jer su na parcijalnoj putanji svi osim 0
                 heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][0],
                                              (size - 1) * -1, 0, curr_position[3] + [0]))
 

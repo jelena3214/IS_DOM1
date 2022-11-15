@@ -55,7 +55,7 @@ class Game:
         self.surface_sprite = pygame.sprite.Group()
         self.surface_sprite.add(Surface())
         agent_pos, self.coin_distance, self.coins, self.coins_sprites = Game.load_map(
-            sys.argv[1] if len(sys.argv) > 1 else os.path.join(config.MAP_FOLDER, 'map1.txt'))
+            sys.argv[1] if len(sys.argv) > 1 else os.path.join(config.MAP_FOLDER, 'map3.txt'))
         self.collected_coins = [CollectedCoin(coin) for coin in self.coins]
         self.collected_coins_sprites = pygame.sprite.Group()
         module = __import__('sprites')
