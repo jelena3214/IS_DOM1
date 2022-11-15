@@ -154,12 +154,14 @@ class Aki(Agent):
 
 
 def all_path_permutations(path):
+    all_paths = []
     reversed_elements = set()
     for i in permutations(path):
-        if i not in reversed_elements:
+        if i not in reversed_elements:  # da ne bismo imali simetricne putanje put 1-2-3 je isti kao 3-2-1
             reversed_i = tuple(reversed(i))
             reversed_elements.add(reversed_i)
-            yield (i)
+            all_paths.append(i)
+    return all_paths
 
 
 class Jocke(Agent):
@@ -218,6 +220,7 @@ class Uki(Agent):
         while True:
             if len(curr_position[3]) == (num_of_nodes + 1):
                 path = curr_position[3]
+                print(list(sorted_list))
                 break
 
             for i in range(1, num_of_nodes):
@@ -232,6 +235,19 @@ class Uki(Agent):
             curr_position = heapq.heappop(sorted_list)
 
         return path
+
+
+# da nam je bitno da uzmemo bas prvu putanju koja je ubacena, a ne nju ili njenu simetricnu ovo bismo
+# uradili kod Ukija i Micka
+# jer heapq nije "stabilna" struktura
+"""
+sorted_elements = set()
+            if len(curr_position[3]) == num_of_nodes:  # fali samo 0
+                if tuple(curr_position[3] + [0]) not in sorted_elements:
+                    heapq.heappush(sorted_list, (curr_position[0] + coin_distance[curr_position[2]][0],
+                                                 (len(curr_position[3]) - 1) * -1, 0, curr_position[3] + [0]))
+                    sorted_elements.add(tuple(reversed(curr_position[3] + [0])))
+"""
 
 
 def kruskal_mst(without, size, paths, history_dict):
